@@ -365,6 +365,18 @@ test_roundtrip(List(String()), [mk_str("hello there")])
 test_roundtrip(List(List(String())), [[mk_str("one"),mk_str("two")],[mk_str("three")]])
 test_roundtrip(List(Option(Tuple([String(),U16()]))), [{'some':mk_tup(mk_str("answer"),42)}])
 
+def test_lower_values(t, args, expected, max_flat):
+  inst = ComponentInstance()
+  opts = mk_opts(bytearray(1000))
+  export_call = ExportCall(opts, inst)
+  vi = CoreValueIter([19])
+  flat_args = lower_values(export_call, max_flat, args, t, vi)
+  assert(flat_args == expected)
+
+test_lower_values([S8()], [42], [42], 1)
+test_lower_values([S8(), S8()], [42, 43], [19], 1)
+test_lower_values([S8(), S8()], [42, 43], [42, 43], 16)
+
 def test_handles():
   before = definitions.MAX_FLAT_RESULTS
   definitions.MAX_FLAT_RESULTS = 16
